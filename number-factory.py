@@ -1,0 +1,26 @@
+__author__ = 'Pavel.Malko'
+def checkio(number):
+    answer = ''
+    division = 9
+    divisor = number
+    while divisor != 1:
+        print("division %d, divisor %d, answer %s"% (division, divisor, answer))
+        if divisor % division == 0:
+            answer = str(division) + answer
+            divisor = divisor // division
+        elif division != 2:
+            division -= 1
+        else: break
+    if answer == '' or divisor != 1:
+        return 0
+    else:
+        return int(answer)
+
+if __name__ == '__main__':
+    #These "asserts" using only for self-checking and not necessary for auto-testing
+    assert checkio(20) == 45, "1st example"
+    assert checkio(21) == 37, "2nd example"
+    assert checkio(17) == 0, "3rd example"
+    assert checkio(33) == 0, "4th example"
+    assert checkio(3125) == 55555, "5th example"
+    assert checkio(9973) == 0, "6th example"
