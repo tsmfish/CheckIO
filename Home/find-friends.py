@@ -4,9 +4,10 @@ def check_connection(network, first, second):
     friends = {}
 
     def unionList(firstList, secondList):
-        for friend in friends[secondList]:
+        if firstList == secondList: return
+        tempList = friends.pop(secondList)
+        for friend in tempList:
             friends[firstList].append(friend)
-        friends.pop(secondList)
 
     def findFriendList(who):
         if len(friends) == 0: return None
@@ -29,6 +30,7 @@ def check_connection(network, first, second):
     return findFriendList(first) == findFriendList(second)
 
 print(check_connection(("nikola-robin","batman-nwing","mr99-batman","mr99-robin","dr101-out00","out00-nwing",),"dr101","mr99"))
+print(check_connection(("scout1-scout3","plane1-robin","scout3-sscout","scout1-base","pingin-scout1","sscout-base","scout3-plane1","scout3-robin","plane1-nikola","plane1-pingin","base-scout3","plane1-sobhia","base-pingin","scout3-sobhia","robin-stevan","robin-base","nikola-robin","sobhia-sscout","stevan-sscout","robin-sobhia","robin-sscout","pingin-sscout","scout3-nikola","nikola-base","plane1-scout1","plane1-base","sscout-plane1","sobhia-scout1","sscout-scout1","robin-pingin","pingin-stevan","pingin-sobhia","scout3-pingin","nikola-sscout","nikola-pingin","stevan-base","stevan-scout1","scout1-nikola","nikola-sobhia","stevan-sobhia","stevan-scout3","scout1-robin","nikola-stevan","sobhia-base","stevan-plane1",),"pingin","sobhia"))
 
 if __name__ == '__main__':
     #These "asserts" using only for self-checking and not necessary for auto-testing
