@@ -40,10 +40,25 @@ Precondition:age < 5000
 0 < opacity ≤ 10000
 '''
 def checkio(opacity):
-    fibonachies = []
-    def fibonachi(n):
-        if
-    return 0
+    fibonachies = {'0': 0, '1': 1}
+    currentOpacity, age = 10000, 0
+
+    def fibonachie(n):
+        n2 = sorted(fibonachies.values())[-1]
+        n1 = sorted(fibonachies.values())[-2]
+        while n > n1 + n2:
+            fibonachies[str(n1+n2)] = n1+n2
+            n1, n2 = n2, n1+n2
+        fibonachies[str(n1+n2)] = n1+n2
+    def isfibonachi(n):
+        if max(fibonachies.values()) < n:
+            fibonachie(n)
+        return str(n) in fibonachies
+
+    while currentOpacity != opacity:
+        age += 1
+        currentOpacity += -age if isfibonachi(age) else 1
+    return age
 
 #These "asserts" using only for self-checking and not necessary for auto-testing
 if __name__ == '__main__':
@@ -53,3 +68,4 @@ if __name__ == '__main__':
     assert checkio(9994) == 3, "3 years"
     assert checkio(9995) == 4, "4 years"
     assert checkio(9990) == 5, "5 years"
+    assert checkio(0) == 5000, "5000 years"
