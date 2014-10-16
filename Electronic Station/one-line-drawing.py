@@ -35,17 +35,35 @@ def draw(segments):
                 deststination[key1][key2] = 1 if value2 else 0
         return deststination
 
-    distanceMatrix = {}
-    for x1, y1, x2, y2 in segments:
-        distanceMatrix.setdefault('%d:%d'%(x1, y1), {})['%d:%d'%(x2, y2)] = 1
-        distanceMatrix.setdefault('%d:%d'%(x2, y2), {})['%d:%d'%(x1, y1)] = 1
-    points = distanceMatrix.keys()
-    for point1 in points:
-        for point2 in points:
-            if point2 not in distanceMatrix[point1]: distanceMatrix[point1][point2] = 0
-    # printMatrix(distanceMatrix)
+    def getDistanceMatrix(vector):
+        """
+        """
+        matrix = {}
+        for x1, y1, x2, y2 in vector:
+            matrix.setdefault('%d:%d'%(x1, y1), {})['%d:%d'%(x2, y2)] = 1
+            matrix.setdefault('%d:%d'%(x2, y2), {})['%d:%d'%(x1, y1)] = 1
+        for point1 in matrix:
+            for point2 in matrix:
+                matrix[point1].setdefault(point2, 0)
+        return matrix
 
-    for point in points:
+    def checkConnectivity(matrix):
+        """
+        :param :matrix - distance matrix
+
+        Проверяем чтобы количеств вершин с нечётным числом рёбер не превышало ДВУХ!!!
+        """
+        parity = 0
+        for point1, vector1 in matrix.items():
+            if len([point2 for point2, link in vector1.items() if link]) & 1:
+                parity += 1
+                if parity > 2: return False
+        return True
+
+    distanceMatrix = getDistanceMatrix(segments)
+    if not checkConnectivity(distanceMatrix): return []
+
+    for point in distanceMatrix:
         solution = [{'point': point,
                      'distances': distanceMatrix,
                      'visited': [],
@@ -76,10 +94,15 @@ def draw(segments):
                 else:
                     # мы использовали все пути - а следовательно нарисовали фигурур. Составляем полученный маршрут и выдаём ответ
                     # print('Solution: '+'->'.join([repr(step['point'].split(':')) for step in solution]))
-                    return [step['point'].split(':') for step in solution]
+                    path = []
+                    for step in solution:
+                        x, y = step['point'].split(':')
+                        path.append((int(x), int(y)))
+                    return path
     return []
 
 # print(draw([(1, 2, 1, 5), (1, 2, 7, 2), (1, 5, 4, 7), (4, 7, 7, 5)]))
+# print(draw({(8,4,8,6),(4,8,6,2),(6,8,8,6),(4,8,8,6),(2,6,4,2),(6,2,8,4),(6,8,6,2),(2,6,6,2),(2,4,8,4),(6,8,8,4),(4,2,6,2),(4,2,8,6),(2,4,2,6),(4,2,6,8),(4,2,4,8),(2,4,6,2),(2,4,4,8),(4,8,6,8),(6,2,8,6),(4,8,8,4),(2,6,8,6),(2,6,6,8),(2,4,4,2),(4,2,8,4),(2,4,6,8),(2,6,4,8),(2,6,8,4),(2,4,8,6)}))
 if __name__ == '__main__':
     #These "asserts" using only for self-checking and not necessary for auto-testing
     def checker(func, in_data, is_possible=True):
