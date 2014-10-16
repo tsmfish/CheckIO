@@ -21,6 +21,20 @@ def draw(segments):
             if [link for poin2, link in matrix[point1].items() if link == 1]:
                 return True
         return False
+
+    def dictCopy(source):
+        """
+
+        :param source: dictionary for copy
+        :return: copy of source.
+        """
+        deststination = {}
+        for key1, value1 in source.items():
+            deststination[key1] = {}
+            for key2, value2 in value1.items():
+                deststination[key1][key2] = 1 if value2 else 0
+        return deststination
+
     distanceMatrix = {}
     for x1, y1, x2, y2 in segments:
         distanceMatrix.setdefault('%d:%d'%(x1, y1), {})['%d:%d'%(x2, y2)] = 1
@@ -29,13 +43,14 @@ def draw(segments):
     for point1 in points:
         for point2 in points:
             if point2 not in distanceMatrix[point1]: distanceMatrix[point1][point2] = 0
-    printMatrix(distanceMatrix)
+    # printMatrix(distanceMatrix)
 
     for point in points:
         solution = [{'point': point,
                      'distances': distanceMatrix,
                      'visited': [],
                      'unvisited': [p1 for p1 in distanceMatrix[point] if distanceMatrix[point][p1] == 1]}]
+        # print('Start from: ' + point)
         while not (not solution[0]['unvisited'] and len(solution) == 1):
             # если есть пути в непосещённый вершины - идём в них
             if [p for p in solution[-1]['unvisited'] if solution[-1]['distances'][solution[-1]['point']][p]]:
@@ -43,27 +58,28 @@ def draw(segments):
                 step = solution[-1]['unvisited'].pop()
                 # помечаем выбранную как посещённую
                 solution[-1]['visited'].append(step)
-                newDistances = solution[-1]['distances'].copy()
+                newDistances = dictCopy(solution[-1]['distances'])
                 # в новой матрице связности удаляем пути от предыдущей до выбраной
                 newDistances[step][solution[-1]['point']], newDistances[solution[-1]['point']][step] = 0, 0
                 solution.append({'point': step,
                                  'distances': newDistances,
                                  'visited': [],
-                                 'unvisited': [p1 for p1 in distanceMatrix[step] if distanceMatrix[step][p1] == 1]})
+                                 'unvisited': [p1 for p1 in newDistances[step] if newDistances[step][p1] == 1]})
+                # print('Step to: ' + step)
             else:
                 # если путей из текущей вершины в другие - нет то:
                 # проверим есть ли вообще пути в графе
                 if hasLink(solution[-1]['distances']):
                     # пути есть - значит мы не нарисовали всю фигуру и пришли в тупик. Возвращаемся на предыдущий шаг
-                    print(1)
+                    # print('Step back.')
                     solution.pop(-1)
                 else:
                     # мы использовали все пути - а следовательно нарисовали фигурур. Составляем полученный маршрут и выдаём ответ
-                    print(1)
+                    # print('Solution: '+'->'.join([repr(step['point'].split(':')) for step in solution]))
                     return [step['point'].split(':') for step in solution]
     return []
 
-
+# print(draw([(1, 2, 1, 5), (1, 2, 7, 2), (1, 5, 4, 7), (4, 7, 7, 5)]))
 if __name__ == '__main__':
     #These "asserts" using only for self-checking and not necessary for auto-testing
     def checker(func, in_data, is_possible=True):
@@ -101,4 +117,3 @@ if __name__ == '__main__':
     assert checker(draw,
                    {(1, 2, 1, 5), (1, 2, 7, 2), (1, 5, 4, 7), (4, 7, 7, 5),
                     (7, 5, 7, 2), (1, 5, 7, 2), (7, 5, 1, 2), (1, 5, 7, 5)}), "Example 3"
-
