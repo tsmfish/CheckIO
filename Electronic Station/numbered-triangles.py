@@ -2,6 +2,12 @@ __author__ = 'Pavel.Malko'
 
 def checkio(chips):
     ansver = 0
+
+    chipsNumber = len(chips)
+    angelNumber = len(chips[0])
+
+    solution = [(chip, angel) for chip in range(chipsNumber) for angel in range(angelNumber)]
+
     return ansver
 
 print (checkio(

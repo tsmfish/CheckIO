@@ -1,8 +1,65 @@
 __author__ = 'Pavel.Malko'
 def checkio(teleports_string):
-    #return any route from 1 to 1 over all points
 
-    return "123456781"
+    def getDistances(teleports):
+    #     create distance matrix
+        matrix = [[0 for j in range(8)] for i in range(8)]
+        for teleport in teleports.split(','):
+            src, dst = int(teleport[0])-1, int(teleport[1])-1
+            matrix[src][dst] = 1
+            matrix[dst][src] = 1
+
+        return matrix
+
+    def copyDict(src):
+        copy = [[] for i in range(len(src))]
+        for p1 in range(len(src)):
+            copy[p1] = [[] for i in range(len(src))]
+            for p2 in range(len(src)):
+                copy[p1][p2] = 1 if src[p1][p2] else 0
+        return copy
+
+    distances = getDistances(teleports_string)
+    rang = len(distances)
+
+    solution = []
+    fullVisited = [i for i in range(rang)]
+
+    for startPoint in range(len(distances)):
+        solution.append({'point': startPoint,
+                         'visited':[startPoint],
+                         'tray': [],
+                         'untray': [p1 for p1 in range(rang) if distances[startPoint][p1] == 1],
+                         'distances': copyDict(distances),
+                         'path': [startPoint]})
+        while solution:
+            # if oll teleports visited, then path equal ansver
+            if sorted(solution[-1]['visited']) == fullVisited:
+                print(''.join([str(i+1) for i in solution[-1]['path']]))
+                return ''.join([str(i+1) for i in solution[-1]['path']])
+            # check is wae have teleport from this ?
+            if solution[-1]['untray']:
+                # tray next step
+                newStep = solution[-1]['untray'].pop()
+                newDistances = copyDict(solution[-1]['distances'])
+                newDistances[solution[-1]['point']][newStep], newDistances[newStep][solution[-1]['point']] = 0,0
+                newVisited = solution[-1]['visited'][:]
+                if newStep not in newVisited:
+                    newVisited.append(newStep)
+                newPath = solution[-1]['path']
+                newPath.append(newStep)
+                solution[-1]['tray'].append(newStep)
+                solution.append({
+                    'point': newStep,
+                    'visited': newVisited,
+                    'tray': [],
+                    'untray': [p1 for p1 in range(rang) if solution[-1]['distances'][newStep][p1] == 1],
+                    'distances': newDistances,
+                    'path': newPath
+                })
+            else:
+                solution.pop(-1)
+    return ""
 
 #This part is using only for self-testing
 if __name__ == "__main__":
