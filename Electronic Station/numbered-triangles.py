@@ -1,13 +1,24 @@
 __author__ = 'Pavel.Malko'
 
 def checkio(chips):
+    def nextStep():
+        global solution, ansver
+        if len(chips)
+
     ansver = 0
 
     chipsNumber = len(chips)
-    angelNumber = len(chips[0])
+    angelsNumber = len(chips[0])
 
-    solution = [(chip, angel) for chip in range(chipsNumber) for angel in range(angelNumber)]
-
+    for startChip in range(chipsNumber):
+        for startAngel in range(angelsNumber):
+            solution = [{'chip': startChip,
+                         'angel': startAngel,
+                         'visited': [],
+                         'unvisited': [chip for chip in range(chipsNumber) if chips[startChip][startAngel] in chips[chip]],
+                         'chips': [chips]}]
+            while len(solution) != 1 or solution[0]['unvisited']:
+                nextStep()
     return ansver
 
 print (checkio(
