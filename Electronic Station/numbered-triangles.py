@@ -16,7 +16,7 @@ def checkio(chips):
                          'angel': startAngel,
                          'visited': [],
                          'unvisited': [chip for chip in range(chipsNumber) if chips[startChip][startAngel] in chips[chip]],
-                         'chips': [chips]}]
+                         'chips': [chips]}]d
             while len(solution) != 1 or solution[0]['unvisited']:
                 nextStep()
     return ansver
