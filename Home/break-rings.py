@@ -1,42 +1,28 @@
 __author__ = 'Pavel.Malko'
 
 def break_rings(rings):
-    vector = {}
-    for left, rigth in rings:
-        vector.setdefault(left, []).append(rigth)
-        vector.setdefault(rigth, []).append(left)
-    braked = []
+    def get_assiciocion_list (rings):
+        associationList = {}
+        for left, rigth in rings:
+            associationList.setdefault(left, []).append(rigth)
+            associationList.setdefault(rigth, []).append(left)
+        return associationList
 
-    while vector:
-        maximumConnected = 0
-        for connected in vector.values():
-            if len(connected) > maximumConnected: maximumConnected = len(connected)
-        desigonsList = {key: {'connected':len(connected), 'free':0} for key, connected in vector.items() if len(connected) == maximumConnected}
-        for key, desigon in desigonsList.items():
-            # copy connection tree
-            newVector = {item: connections[:] for item, connections in vector.items()}
-            newVector.pop(key)
-            for ring, connectedRing in newVector.items():
-                if key in connectedRing:
-                    connectedRing.remove(key)
-                    if not connectedRing:
-                        desigonsList[key]['free'] += 1
+    def destroy_ring(list, ring):
+        new_list, destroy_query = {name: value[:] for name, value in list.items() if name != ring}, []
+        for rings in new_list.values():
+            if ring in rings: rings.remove(ring)
 
-        toBreak = max(desigonsList.items(), key=lambda key:key[1]['free'])[0]
-        vector.pop(toBreak)
-        toRemove = []
-        for key, connections in vector.items():
-            if toBreak in connections:
-                connections.remove(toBreak)
-                if not connections:
-                    toRemove.append(key)
-        for key in toRemove:
-            vector.pop(key)
+        return {name: value for name, value in new_list.items() if value}
 
-        braked.append(toBreak)
+    def destroer(associoacionList, destroyed):
+        if not associoacionList: return destroyed
+        ring_count = len(associoacionList)
+        ratingRings = {ring:ring_count - len(destroy_ring(associoacionList, ring)) for ring in associoacionList}
 
-    print(braked)
-    return len(braked)
+        return destroer(destroy_ring(associoacionList, max(ratingRings.items(), key=lambda key:key[1])[0]), destroyed+1)
+
+    return destroer(get_assiciocion_list(rings), 0)
 
 print(break_rings(({1,9},{1,2},{8,5},{4,6},{5,6},{8,1},{3,4},{2,6},{9,6},{8,4},{8,3},{5,7},{9,7},{2,3},{1,7},)))
 print(break_rings(({3,4},{5,6},{2,7},{1,5},{2,6},{8,4},{1,7},{4,5},{9,5},{2,3},{8,2},{2,4},{9,6},{5,7},{3,6},{1,3},)))
